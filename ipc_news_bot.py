@@ -2,6 +2,8 @@ import os
 from telegram.ext import Updater, MessageHandler, Filters
 import feedparser
 from urllib.parse import quote_plus
+from flask import Flask
+from threading import Thread
 
 # 🔐 TELEGRAM BOT TOKEN (FROM ENV VARIABLE)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -20,6 +22,19 @@ IPC_MAP = {
     "327": "extortion with injury India",
     "38":  "criminal conspiracy OR common intention India"
 }
+
+# 🌐 KEEP-ALIVE SERVER (FOR REPLIT FREE)
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "IPC News Bot is alive"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    Thread(target=run).start()
 
 def fetch_latest_news(query):
     try:
@@ -65,6 +80,8 @@ def handle_message(update, context):
     update.message.reply_text(reply, disable_web_page_preview=True)
 
 def main():
+    keep_alive()  # ✅ KEEP REPLIT AWAKE
+
     updater = Updater(BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))

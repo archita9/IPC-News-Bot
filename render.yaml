@@ -6,3 +6,4 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python ipc_news_bot.py
     runtime: python-3.11.9
+
